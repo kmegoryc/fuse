@@ -3,4 +3,4 @@
 
 (defn student-page []
   [:div
-   ])
+   [:h2 "testing"]])

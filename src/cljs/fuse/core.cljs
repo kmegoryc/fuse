@@ -12,7 +12,7 @@
 ;; Views
 
 (def nav
-  [:> ($ :Menu) {:inverted true :pointing true :borderless true}
+  [:> ($ :Menu) {:inverted true :pointing true :borderless true :class "menu"}
    [:> ($ :Menu.Item)
     [:> ($ :Image) {:src "http://www.guruadvisor.net/images/numero11/cloud.png" :height 32}]]
    [:> ($ :Menu.Menu) {:position :right}
@@ -25,17 +25,23 @@
    [:div.content
     [(session/get :current-page)]]])
 
+(defn set-page!
+  [page]
+  (when-let [current-page (session/put! :current-page page)]
+    current-page)
+  (.scrollTo js/window 0 0))
+
 ;; -------------------------
 ;; Routes
 
-#_(secretary/defroute "/" []
-    (session/put! :current-page #'home/home-page))
-
 (secretary/defroute "/" []
-  (session/put! :current-page #'teacher/teacher-page))
+  (set-page! #'home/home-page))
+
+(secretary/defroute "/teacher" []
+  (set-page! #'teacher/teacher-page))
 
 (secretary/defroute "/student" []
-  (session/put! :current-page #'student/student-page))
+  (set-page! #'student/student-page))
 
 ;; -------------------------
 ;; Initialize app

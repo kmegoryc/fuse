@@ -2,10 +2,15 @@
   (:require [garden.def :refer [defstyles]]
             [garden.units :refer [px em percent]]))
 
+(def global
+  [:div.field {:padding 0}])
+
 (defstyles styles
-  [:div.wrapper
-   [:div.create
+  [:div.page
+   [:.menu {:border-radius 0}]
+   [:div.content
     {:margin (px 40)}
+    global
     [:.create-form
      {:width (percent 75)
       :padding (px 40)}]]])

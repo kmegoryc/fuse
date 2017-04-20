@@ -3,4 +3,4 @@
 
 (defn home-page []
   [:div
-   ])
+   [:h2 "testing"]])
