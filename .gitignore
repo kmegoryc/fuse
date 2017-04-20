@@ -1,5 +1,4 @@
 /target
-/classes
 /checkouts
 profiles.clj
 pom.xml
@@ -8,8 +7,12 @@ pom.xml.asc
 *.class
 /.lein-*
 /.nrepl-port
-/resources/public/js
+resources
 /out
 /.repl
 *.log
 /.env
+*.min.css
+*.css
+.DS_Store
+/cookies
