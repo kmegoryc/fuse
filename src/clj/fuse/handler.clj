@@ -1,5 +1,5 @@
 (ns fuse.handler
-  (:require [compojure.core :refer [GET defroutes]]
+  (:require [compojure.core :refer [GET POST defroutes]]
             [compojure.route :refer [not-found resources]]
             [hiccup.page :refer [include-js include-css html5]]
             [fuse.middleware :refer [wrap-middleware]]
@@ -7,10 +7,10 @@
 
 (def mount-target
   [:div#app
-      [:h3 "ClojureScript has not been compiled!"]
-      [:p "please run "
-       [:b "lein figwheel"]
-       " in order to start the compiler"]])
+   [:h3 "ClojureScript has not been compiled!"]
+   [:p "please run "
+    [:b "lein figwheel"]
+    " in order to start the compiler"]])
 
 (defn head []
   [:head
@@ -27,11 +27,28 @@
      mount-target
      (include-js "/js/app.js")]))
 
+(def a (atom {}))
+
+(defn update-modules
+  [request]
+  ;;do our server backend stuff
+  ;;(prn "hi this worked!")
+  (clojure.pprint/pprint {:request request})
+  (spit "modules.edn" request) ;; <- the backend stuff
+  ;;tell the browser everything went ok
+  {:status 200
+   :body "update successful!"})
+
+(defn slurp-data
+  []
+  (slurp "modules.edn"))
 
 (defroutes routes
   (GET "/" [] (loading-page))
   (GET "/student" [] (loading-page))
   (GET "/teacher" [] (loading-page))
+  (POST "/teacher" request (update-modules request))
+  (GET "/data" [] (slurp-data))
 
   (resources "/")
   (not-found "Not Found"))

@@ -6,10 +6,13 @@
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring-server "0.4.0"]
+                 [cljs-ajax "0.5.8"]
+                 [cljs-http "0.1.42"]
                  [reagent "0.6.1"]
                  [reagent-utils "0.2.1"]
                  [ring "1.5.1"]
                  [ring/ring-defaults "0.2.3"]
+                 [metosin/ring-swagger "0.23.0"]
                  [compojure "1.5.2"]
                  [garden "1.3.2"]
                  [hiccup "1.0.5"]
