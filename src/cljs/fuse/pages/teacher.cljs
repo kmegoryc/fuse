@@ -31,6 +31,21 @@
              (prn "old-state" old-state)
              (prn "new-state" new-state)))
 
+(def options
+  [:div
+   [:> ($ :Form.Group)
+    [:> ($ :Form.Input) {:label "Option 1" :placeholder "Ex: Too Slow"
+                         :on-change (fn [ev data]
+                                      (swap! create* assoc :option1 (:value (js->clj data :keywordize-keys true))))}]
+    [:> ($ :Form.Input) {:label "Option 2" :placeholder "Ex: Too Fast"
+                         :on-change (fn [ev data]
+                                      (swap! create* assoc :option2 (:value (js->clj data :keywordize-keys true))))}]]
+   [:br]
+   [:> ($ :Button) {:href "#"
+                    :on-click (fn [ev]
+                                (swap! data* update-in [:data] conj @create*)
+                                (prn data*))} "Submit"]])
+
 (defn teacher-page []
   [:div
    [:div.results
@@ -59,7 +74,7 @@
            [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Slider"))} "Slider"]
            [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Toggle"))} "Toggle"]
            [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Poll"))}"Poll"]
-           [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Open Feedback" :option1 nil))} "Open Feedback"]]]
+           [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Open Feedback" :option2 nil))} "Open Feedback"]]]
          [:> ($ :Form.Input) {:placeholder "Name (Ex: Pace)"
                               :on-change (fn [ev data]
                                            (swap! create* assoc :name (:value (js->clj data :keywordize-keys true))))}]]
@@ -69,48 +84,15 @@
           (= (@create* :type) "Slider")
           [:div
            [:> ($ :Header) {:dividing true} "Slider"]
-           [:> ($ :Form.Group)
-            [:> ($ :Form.Input) {:label "Option 1" :placeholder "Ex: Too Slow"
-                                 :on-change (fn [ev data]
-                                              (swap! create* assoc :option1 (:value (js->clj data :keywordize-keys true))))}]
-            [:> ($ :Form.Input) {:label "Option 2" :placeholder "Ex: Too Fast"
-                                 :on-change (fn [ev data]
-                                              (swap! create* assoc :option2 (:value (js->clj data :keywordize-keys true))))}]]
-           [:br]
-           [:> ($ :Button) {:href "#"
-                            :on-click (fn [ev]
-                                        (swap! data* update-in [:data] conj @create*)
-                                        (prn data*))} "Submit" ]]
+           options]
           (= (@create* :type) "Toggle")
           [:div
            [:> ($ :Header) {:dividing true} "Toggle"]
-           [:> ($ :Form.Group)
-            [:> ($ :Form.Input) {:label "Option 1" :placeholder "Ex: I Need Help"
-                                 :on-change (fn [ev data]
-                                              (swap! create* assoc :option1 (:value (js->clj data :keywordize-keys true))))}]
-            [:> ($ :Form.Input) {:label "Option 2" :placeholder "I'm Okay"
-                                 :on-change (fn [ev data]
-                                              (swap! create* assoc :option2 (:value (js->clj data :keywordize-keys true))))}]]
-           [:br]
-           [:> ($ :Button) {:href "#"
-                            :on-click (fn [ev]
-                                        (swap! data* update-in [:data] conj @create*)
-                                        (prn data*))} "Submit"]]
+           options]
           (= (@create* :type) "Poll")
           [:div
            [:> ($ :Header) {:dividing true} "Poll"]
-           [:> ($ :Form.Group)
-            [:> ($ :Form.Input) {:label "Option 1" :placeholder "Ex: Work time"
-                                 :on-change (fn [ev data]
-                                              (swap! create* assoc :option1 (:value (js->clj data :keywordize-keys true))))}]
-            [:> ($ :Form.Input) {:label "Option 2" :placeholder "Ex: Keep going"
-                                 :on-change (fn [ev data]
-                                              (swap! create* assoc :option2 (:value (js->clj data :keywordize-keys true))))}]]
-           [:br]
-           [:> ($ :Button) {:href "#"
-                            :on-click (fn [ev]
-                                        (swap! data* update-in [:data] conj @create*)
-                                        (prn data*))} "Submit"]]
+           options]
           (= (@create* :type) "Open Feedback")
           [:div
            [:> ($ :Header) {:dividing true} "Open Feedback"]
