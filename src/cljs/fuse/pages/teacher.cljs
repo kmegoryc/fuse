@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as reagent :refer [atom]]
             [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]
+            [cljs.core.async :refer  [<!]]
             [semantic-ui.core :refer [$]]))
 
 (def show-hide*
@@ -17,14 +17,24 @@
          :option2 nil}))
 
 (def data*
-  (atom
-    {:data []}))
+  (atom {}))
 
-(def a (atom {}))
+(def pull-data*
+  (atom
+    (go (let [response (<! (http/get "http://localhost:3000/read-data"))]
+          (:body response)))))
+
+(prn (str "pull data" @pull-data*))
+
+#_(def my-data*
+    (atom
+      (http/get "http://localhost:3000/data" {})))
+
+#_(prn (str "my data" @my-data*))
 
 (add-watch data* :watcher
            (fn [key atom old-state new-state]
-             (http/post "http://localhost:3000/teacher" {:form-params new-state})
+             (http/post "http://localhost:3000/add-module" {:form-params new-state})
              (prn "-- Atom Changed --")
              (prn "key" key)
              (prn "atom" atom)
@@ -43,13 +53,18 @@
    [:br]
    [:> ($ :Button) {:href "#"
                     :on-click (fn [ev]
-                                (swap! data* update-in [:data] conj @create*)
-                                (prn data*))} "Submit"]])
+                                (reset! data* @create*) )} "Submit"]])
+
+(def results
+  #_(let [response (http/get "http://localhost:3000/data")]
+      (go (<! response
+              (:body response))))
+  [:div.results
+   [:> ($ :Progress) {:percent 50 :indicating true :progress true :color "olive"}]])
 
 (defn teacher-page []
   [:div
-   [:div.results
-    [:> ($ :Progress) {:percent 50 :indicating true :progress true :color "olive"}]]
+   results
    [:div.create
     [:> ($ :Button)
      {:content (get @show-hide* :content)
@@ -102,7 +117,6 @@
            [:br]
            [:> ($ :Button) {:href "#"
                             :on-click (fn [ev]
-                                        (swap! data* update-in [:data] conj @create*)
-                                        (prn data*))} "Submit"]]
+                                        (reset! data* @create*))} "Submit"]]
           :else nil)]]
       nil)]])

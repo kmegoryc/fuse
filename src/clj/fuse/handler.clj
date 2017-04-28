@@ -3,6 +3,7 @@
             [compojure.route :refer [not-found resources]]
             [hiccup.page :refer [include-js include-css html5]]
             [fuse.middleware :refer [wrap-middleware]]
+            [clojure.edn :as edn]
             [config.core :refer [env]]))
 
 (def mount-target
@@ -27,28 +28,27 @@
      mount-target
      (include-js "/js/app.js")]))
 
-(def a (atom {}))
-
-(defn update-modules
+(defn add-module
   [request]
-  ;;do our server backend stuff
-  ;;(prn "hi this worked!")
-  (clojure.pprint/pprint {:request request})
-  (spit "modules.edn" request) ;; <- the backend stuff
-  ;;tell the browser everything went ok
+  (let [request-fp (:form-params request)
+        conj-result (conj (edn/read-string (slurp "modules.edn")) request-fp)]
+    (prn (str "request: " request-fp))
+    (prn (str "conj result: " conj-result))
+    (spit "modules.edn" conj-result))
   {:status 200
-   :body "update successful!"})
+   :body "add successful"})
 
-(defn slurp-data
+(defn read-data
   []
-  (slurp "modules.edn"))
+  {:status 200
+   :body (edn/read-string (slurp "modules.edn"))})
 
 (defroutes routes
   (GET "/" [] (loading-page))
   (GET "/student" [] (loading-page))
   (GET "/teacher" [] (loading-page))
-  (POST "/teacher" request (update-modules request))
-  (GET "/data" [] (slurp-data))
+  (POST "/add-module" request (add-module request))
+  (GET "/read-data" [] (read-data))
 
   (resources "/")
   (not-found "Not Found"))

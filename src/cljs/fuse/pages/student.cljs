@@ -2,13 +2,9 @@
   (:require [semantic-ui.core :refer [$]]
             [reagent.core :as reagent :refer [atom]]))
 
-(def DATA
-  {{:type "button"
-    :name "Need individual help?"
-    :options ["I'm Okay" "Yes Please"]}
-   {:type "slider"
-    :name "Pace"
-    :options [0 10]}})
+(def data*
+  (atom
+    {:data []}))
 
 (defn button
   [name options]
