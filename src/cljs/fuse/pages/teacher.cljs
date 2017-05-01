@@ -2,8 +2,9 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [reagent.core :as reagent :refer [atom]]
             [cljs-http.client :as http]
-            [cljs.core.async :refer  [<!]]
-            [semantic-ui.core :refer [$]]))
+            [cljs.core.async :as async]
+            [semantic-ui.core :refer [$]]
+            [fuse.pages.components :refer [button slider poll open-feedback]]))
 
 (def show-hide*
   (atom {:content "Show Module Options"
@@ -16,23 +17,17 @@
          :option1 nil
          :option2 nil}))
 
-(def data*
-  (atom {}))
+(def new-data*
+  (atom nil))
 
-(def pull-data*
-  (atom
-    (go (let [response (<! (http/get "http://localhost:3000/read-data"))]
-          (:body response)))))
+(def all-data*
+  (atom nil))
 
-(prn (str "pull data" @pull-data*))
+(def read-data
+  (go (let [response (async/<! (http/get "http://localhost:3000/read-data"))]
+        (reset! all-data* (:body response)))))
 
-#_(def my-data*
-    (atom
-      (http/get "http://localhost:3000/data" {})))
-
-#_(prn (str "my data" @my-data*))
-
-(add-watch data* :watcher
+(add-watch new-data* :watcher
            (fn [key atom old-state new-state]
              (http/post "http://localhost:3000/add-module" {:form-params new-state})
              (prn "-- Atom Changed --")
@@ -53,19 +48,15 @@
    [:br]
    [:> ($ :Button) {:href "#"
                     :on-click (fn [ev]
-                                (reset! data* @create*) )} "Submit"]])
-
-(def results
-  #_(let [response (http/get "http://localhost:3000/data")]
-      (go (<! response
-              (:body response))))
-  [:div.results
-   [:> ($ :Progress) {:percent 50 :indicating true :progress true :color "olive"}]])
+                                (reset! new-data* @create*))} "Submit"]])
 
 (defn teacher-page []
   [:div
-   results
+   [:div.results
+    [:> ($ :Header) {:size "large"} "Responses"]
+    [:> ($ :Progress) {:percent 50 :indicating true :progress true :color "olive"}]]
    [:div.create
+    [:> ($ :Header) {:size "large"} "Create Modules"]
     [:> ($ :Button)
      {:content (get @show-hide* :content)
       :color "teal"
@@ -117,6 +108,6 @@
            [:br]
            [:> ($ :Button) {:href "#"
                             :on-click (fn [ev]
-                                        (reset! data* @create*))} "Submit"]]
+                                        (reset! new-data* @create*))} "Submit"]]
           :else nil)]]
       nil)]])

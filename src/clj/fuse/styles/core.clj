@@ -10,6 +10,7 @@
    [:.menu {:border-radius 0}]
    [:div.content
     {:margin (px 40)}
+    [:div.module {:margin [[(px 20) 0]]}]
     global
     [:.create-form
      {:width (percent 75)

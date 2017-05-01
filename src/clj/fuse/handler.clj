@@ -30,7 +30,7 @@
 
 (defn add-module
   [request]
-  (let [request-fp (:form-params request)
+  (let [request-fp (:params request)
         conj-result (conj (edn/read-string (slurp "modules.edn")) request-fp)]
     (prn (str "request: " request-fp))
     (prn (str "conj result: " conj-result))

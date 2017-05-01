@@ -11,6 +11,7 @@
                  [reagent "0.6.1"]
                  [reagent-utils "0.2.1"]
                  [ring "1.5.1"]
+                 [ring-middleware-format "0.7.2"]
                  [ring/ring-defaults "0.2.3"]
                  [metosin/ring-swagger "0.23.0"]
                  [compojure "1.5.2"]
