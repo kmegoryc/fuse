@@ -22,7 +22,7 @@
 (defn current-page []
   [:div.page
    nav
-   [:div.content
+   [:div.page-content
     [(session/get :current-page)]]])
 
 (defn set-page!

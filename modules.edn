@@ -1,1 +1,1 @@
-({:type "Toggle", :name "wee", :option1 "fd", :option2 "d"} {:type "Poll", :name "d", :option1 "s", :option2 "s"})
+({:type "Toggle", :name "Pace", :option1 "Too Slow", :option2 "Too Fast", "" nil, :avg "50"} {:type "Toggle", :name "Content", :option1 "Too Little", :option2 "Too Much", "" nil, :avg "50"})

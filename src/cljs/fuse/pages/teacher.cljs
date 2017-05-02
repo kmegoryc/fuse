@@ -3,8 +3,7 @@
   (:require [reagent.core :as reagent :refer [atom]]
             [cljs-http.client :as http]
             [cljs.core.async :as async]
-            [semantic-ui.core :refer [$]]
-            [fuse.pages.components :refer [button slider poll open-feedback]]))
+            [semantic-ui.core :refer [$]]))
 
 (def show-hide*
   (atom {:content "Show Module Options"
@@ -15,26 +14,20 @@
   (atom {:type "Choose a Module"
          :name nil
          :option1 nil
-         :option2 nil}))
-
-(def new-data*
-  (atom nil))
+         :option2 nil
+         :votes []
+         :avg 50}))
 
 (def all-data*
-  (atom nil))
+  (atom #{}))
 
-(def read-data
+(defn read-data
+  []
   (go (let [response (async/<! (http/get "http://localhost:3000/read-data"))]
+        (prn (str "all data reset to: " (:body response)))
         (reset! all-data* (:body response)))))
 
-(add-watch new-data* :watcher
-           (fn [key atom old-state new-state]
-             (http/post "http://localhost:3000/add-module" {:form-params new-state})
-             (prn "-- Atom Changed --")
-             (prn "key" key)
-             (prn "atom" atom)
-             (prn "old-state" old-state)
-             (prn "new-state" new-state)))
+(read-data)
 
 (def options
   [:div
@@ -48,13 +41,37 @@
    [:br]
    [:> ($ :Button) {:href "#"
                     :on-click (fn [ev]
-                                (reset! new-data* @create*))} "Submit"]])
+                                (read-data)
+                                (http/post "http://localhost:3000/add-module" {:form-params @create*})
+                                (read-data)
+                                (println "new data: " @create*))} "Submit"]])
 
 (defn teacher-page []
   [:div
    [:div.results
     [:> ($ :Header) {:size "large"} "Responses"]
-    [:> ($ :Progress) {:percent 50 :indicating true :progress true :color "olive"}]]
+    [:div.results
+     (map-indexed
+       (fn [i {:keys [type name option1 option2 votes avg]}]
+         ^{:key i}
+         [:div.module
+          [:> ($ :Header) {:size "medium" :class "teacher-header"} name]
+          [:div.display
+           [:> ($ :Button) {:primary true :icon true :circular true
+                            :on-click (fn [ev]
+                                        (read-data)
+                                        (http/post "http://localhost:3000/remove-module" {:form-params {:name name}})
+                                        (read-data))}
+            [:> ($ :Icon) {:name "remove"}]]
+           [:> ($ :Progress) {:percent avg :indicating true :progress true :color
+                              (cond
+                                (> avg 75) "red"
+                                (< avg 25) "red"
+                                :else "olive")}]]
+          [:div {:style {:float "left" :color "grey"}} option1]
+          [:div {:style {:float "right" :color "grey"}} option2]])
+       @all-data*)]]
+   [:> ($ :Divider)]
    [:div.create
     [:> ($ :Header) {:size "large"} "Create Modules"]
     [:> ($ :Button)
@@ -108,6 +125,9 @@
            [:br]
            [:> ($ :Button) {:href "#"
                             :on-click (fn [ev]
-                                        (reset! new-data* @create*))} "Submit"]]
+                                        (read-data)
+                                        (http/post "http://localhost:3000/add-module" {:form-params @create*})
+                                        (read-data)
+                                        (println "new data: " @create*))} "Submit"]]
           :else nil)]]
       nil)]])
