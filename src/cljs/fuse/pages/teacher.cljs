@@ -61,7 +61,7 @@
   [:div
    nav
    [:div.page-content
-    (if-not (nil? @all-data*)
+    (if-not (empty? @all-data*)
       [:div.results
        [:> ($ :Header) {:size "large"} "Responses"]
        [:div.results
@@ -91,8 +91,8 @@
                                    :else "olive")}]]
              [:div {:style {:float "left" :color "grey"}} option1]
              [:div {:style {:float "right" :color "grey"}} option2]])
-          @all-data*)]])
-    [:> ($ :Divider)]
+          @all-data*)]
+       [:> ($ :Divider)]])
     [:div.create
      [:> ($ :Header) {:size "large"} "Create Modules"]
      [:> ($ :Button)
@@ -117,8 +117,9 @@
            [:> ($ :Dropdown.Menu)
             [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Slider"))} "Slider"]
             [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Toggle"))} "Toggle"]
-            [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Poll"))}"Poll"]
-            [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Open Feedback" :option2 nil))} "Open Feedback"]]]
+            ;;[:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Poll"))}"Poll"]
+            ;;[:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Open Feedback" :option2 nil))} "Open Feedback"]
+            ]]
           [:> ($ :Form.Input) {:placeholder "Name (Ex: Pace)"
                                :on-change (fn [ev data]
                                             (swap! create* assoc :name (:value (js->clj data :keywordize-keys true))))}]]
