@@ -125,7 +125,7 @@
                           :icon (if (= (@show-hide* :open) false) "chevron down" "chevron up")
                           :open (if (= (@show-hide* :open) false) true false)))}]
      (if (= (@show-hide* :open) true)
-       [:> ($ :Segment) {:padded true :class "create-form"}
+       [:> ($ :Segment) {:style {:padding "40px"} :class "create-form"}
         [:> ($ :Form)
          [:> ($ :Form.Group)
           [:> ($ :Dropdown) {:floating true

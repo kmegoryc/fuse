@@ -31,6 +31,10 @@
   [:div
    nav
    [:div.page-content
+    (println @username*)
+    (if-not (empty? @username*)
+      [:> ($ :Header) {:color "teal" :size "medium"} (str "Welcome, " @username* "!")]
+      [:> ($ :Header) {:color "teal" :size "medium"} (str "Please enter your username above to enable feedback submissions.")])
     [:div.submissions
      [:> ($ :Header) {:size "large"} "Submit Responses"]
      (doall
@@ -43,7 +47,7 @@
               [:div.toggle
                [:> ($ :Header) {:size "medium"} name]
                [:> ($ :Button.Group)
-                [:> ($ :Button) {:disabled (nil? @username*)
+                [:> ($ :Button) {:disabled (empty? @username*)
                                  :on-click
                                  (fn [ev data]
                                    (go (async/<! (http/post "http://localhost:3000/update-module"
@@ -63,7 +67,7 @@
              [:div.module
               [:div.toggle
                [:> ($ :Header) {:size "medium"} name]
-               [:input {:disabled (nil? @username*) :type "range" :min 0 :max 100 :style {:width "90%" :hidden true} :class "mdl-slider mdl-js-slider"
+               [:input {:disabled (empty? @username*) :type "range" :min 0 :max 100 :style {:width "95%"} :class "mdl-slider mdl-js-slider"
                         :on-change
                         (fn [ev data]
                           (let [value (.-target.value ev)]
@@ -80,7 +84,7 @@
               [:div.open-feedback
                [:> ($ :Header) {:size "medium"} name]
                [:> ($ :Form)
-                [:> ($ :TextArea) {:disabled (nil? @username*) :placeholder option1 :autoHeight true
+                [:> ($ :TextArea) {:disabled (empty? @username*) :placeholder option1 :autoHeight true
                                    :on-change
                                    (fn [ev data]
                                      (reset! feedback* (:value (js->clj data :keywordize-keys true))))}]
