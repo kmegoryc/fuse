@@ -67,30 +67,50 @@
        [:div.results
         (map-indexed
           (fn [i {:keys [type name option1 option2 votes avg]}]
-            ^{:key i}
-            [:div.module
-             [:> ($ :Header) {:size "medium" :class "teacher-header"} name]
-             [:div.display
-              [:> ($ :Button) {:primary true :icon true :circular true
-                               :on-click (fn [ev]
-                                           (go (async/<! (http/post "http://localhost:3000/remove-module" {:form-params {:name name}}))
-                                               (read-data)))}
-               [:> ($ :Icon) {:name "remove"}]]
-              (prn "votes: " votes)
-              [:> ($ :Progress) {:percent (if (empty? votes)
-                                            avg
-                                            (/ (apply + (map #(js/parseInt (:choice %)) votes)) (count votes)))
-                                 :indicating true :progress true :color
-                                 (cond
-                                   (> (if (empty? votes)
-                                        avg
-                                        (/ (apply + (map #(js/parseInt (:choice %)) votes)) (count votes))) 75) "red"
-                                   (< (if (empty? votes)
-                                        avg
-                                        (/ (apply + (map #(js/parseInt (:choice %)) votes)) (count votes))) 25) "red"
-                                   :else "olive")}]]
-             [:div {:style {:float "left" :color "grey"}} option1]
-             [:div {:style {:float "right" :color "grey"}} option2]])
+            (cond
+              (= type "Open Feedback")
+              ^{:key i}
+              [:div.module {:style {:position :relative}}
+               [:> ($ :Header) {:size "medium"} option1]
+               [:> ($ :Feed) {:style {:margin "20px 0"}}
+                (map-indexed
+                  (fn [i {:keys [id name choice]}]
+                    ^{:key i}
+                    [:> ($ :Feed.Event)
+                     [:> ($ :Feed.Label) {:image "http://www.infragistics.com/media/8948/anonymous_200.gif"}]
+                     [:> ($ :Feed.Content)
+                      [:> ($ :Feed.Summary) (str id " posted a comment.")]
+                      [:> ($ :Feed.Extra) {:text true} choice]]]) votes)]
+               [:> ($ :Button) {:primary true :icon true :circular true :style {:position :absolute :top 0 :right 0 :margin "10px"}
+                                :on-click (fn [ev]
+                                            (go (async/<! (http/post "http://localhost:3000/remove-module" {:form-params {:name name}}))
+                                                (read-data)))}
+                [:> ($ :Icon) {:name "remove"}]]]
+              :else
+              ^{:key i}
+              [:div.module {:style {:position :relative}}
+               [:> ($ :Header) {:size "medium" :class "teacher-header"} name]
+
+               [:> ($ :Button) {:primary true :icon true :circular true :style {:position :absolute :top 0 :right 0 :margin "10px"}
+                                :on-click (fn [ev]
+                                            (go (async/<! (http/post "http://localhost:3000/remove-module" {:form-params {:name name}}))
+                                                (read-data)))}
+                [:> ($ :Icon) {:name "remove"}]]
+               (prn "votes: " votes)
+               [:> ($ :Progress) {:percent (if (empty? votes)
+                                             avg
+                                             (/ (apply + (map #(js/parseInt (:choice %)) votes)) (count votes)))
+                                  :indicating true :progress true :color
+                                  (cond
+                                    (> (if (empty? votes)
+                                         avg
+                                         (/ (apply + (map #(js/parseInt (:choice %)) votes)) (count votes))) 75) "red"
+                                    (< (if (empty? votes)
+                                         avg
+                                         (/ (apply + (map #(js/parseInt (:choice %)) votes)) (count votes))) 25) "red"
+                                    :else "olive")}]
+               [:div {:style {:float "left" :color "grey"}} option1]
+               [:div {:style {:float "right" :color "grey"}} option2]]))
           @all-data*)]
        [:> ($ :Divider)]])
     [:div.create
@@ -117,8 +137,7 @@
            [:> ($ :Dropdown.Menu)
             [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Slider"))} "Slider"]
             [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Toggle"))} "Toggle"]
-            ;;[:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Poll"))}"Poll"]
-            ;;[:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Open Feedback" :option2 nil))} "Open Feedback"]
+            [:> ($ :Dropdown.Item) {:on-click (fn [ev] (swap! create* assoc :type "Open Feedback" :option2 nil))} "Open Feedback"]
             ]]
           [:> ($ :Form.Input) {:placeholder "Name (Ex: Pace)"
                                :on-change (fn [ev data]
@@ -134,10 +153,6 @@
            [:div
             [:> ($ :Header) {:dividing true} "Toggle"]
             options]
-           (= (@create* :type) "Poll")
-           [:div
-            [:> ($ :Header) {:dividing true} "Poll"]
-            options]
            (= (@create* :type) "Open Feedback")
            [:div
             [:> ($ :Header) {:dividing true} "Open Feedback"]
@@ -147,8 +162,8 @@
             [:br]
             [:> ($ :Button) {:href "#"
                              :on-click (fn [ev]
-                                         (http/post "http://localhost:3000/add-module" {:form-params @create*})
-                                         (read-data)
+                                         (go (async/<! (http/post "http://localhost:3000/add-module" {:form-params @create*}))
+                                             (read-data))
                                          (println "new data: " @create*))} "Submit"]]
            :else nil)]]
        nil)]]])

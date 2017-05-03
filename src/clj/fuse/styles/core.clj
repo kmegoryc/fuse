@@ -6,12 +6,11 @@
   [:div.field {:padding 0}])
 
 (def module
-  [:div.module {:padding [[(px 30) 0]]}
-   [:.teacher-header {:margin-left (px 55)}]
-   [:div.display {:display "flex"
-                  :align-items "center"}
-    [:.progress {:width (percent 100)
-                 :margin "1.5em 1em"}]]])
+  [:div.module {:padding (px 40)
+                :border-radius (px 5)
+                :border "1px solid lightgrey"
+                :margin [[(px 10) 0]]}
+   [:div.teacher-header {:margin-top (px 10)}]])
 
 (defstyles styles
   [:div.page
@@ -25,4 +24,6 @@
     [:div.create {:width (percent 75)
                   :margin [[(px 40) 0]]}]
     [:div.results {:width (percent 75)
-                   :margin [[(px 40) 0]]}]]])
+                   :margin [[(px 40) 0]]}]
+    [:div.submissions {:width (percent 50)
+                       :margin [[(px 40) 0]]}]]])
