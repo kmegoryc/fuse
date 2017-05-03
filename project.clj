@@ -28,6 +28,7 @@
 
   :plugins [[lein-environ "1.0.2"]
             [lein-cljsbuild "1.1.1"]
+            [lein-heroku "0.5.3"]
             [lein-asset-minifier "0.2.7"
              :exclusions [org.clojure/clojure]]]
 
@@ -39,6 +40,11 @@
   :uberjar-name "fuse.jar"
 
   :main fuse.server
+
+  :heroku {:app-name "rtw-fuse"
+           :jdk-version "1.8"
+           :include-files ["target/fuse.jar"]
+           :process-types { "web" "java -jar target/fuse.jar"}}
 
   :clean-targets ^{:protect false}
   [:target-path
