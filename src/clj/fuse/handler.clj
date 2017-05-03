@@ -32,8 +32,10 @@
 
 (defn add-module
   [request]
-  (let [request-fp (:params request)
+  (let [request-fp (assoc (:params request) :votes [])
         conj-result (conj (edn/read-string (slurp "modules.edn")) request-fp)]
+    (println "request: " request)
+    (println "body: " (:body request))
     (prn (str "add request: " request-fp))
     (prn (str "conj result: " conj-result))
     (spit "modules.edn" conj-result))
@@ -55,6 +57,22 @@
 
 (defn update-module
   [request]
+  (let [request-fp (:params request)
+        file-data (vec (edn/read-string (slurp "modules.edn")))
+        module-index (first (remove nil? (map-indexed (fn [i {:keys [name]}]
+                                                        (if (= (:name request-fp) name)
+                                                          i)) file-data)))
+        vote-data (get-in file-data [module-index :votes])
+        vote-index (first (remove nil? (map-indexed (fn [i {:keys [id]}]
+                                                      (if (= (:id request-fp) id)
+                                                        i)) vote-data)))
+        new-data (if-not (nil? vote-index)
+                   ;;if vote index is not nil, then update-in conj :votes with new request
+                   (assoc-in file-data [module-index :votes vote-index] request-fp)
+                   (update-in file-data [module-index :votes] conj request-fp))]
+    (clojure.pprint/pprint {:new-data new-data})
+    (println "request: " request-fp)
+    (spit "modules.edn" (pr-str new-data)))
   {:status 200
    :body "update successful"})
 

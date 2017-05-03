@@ -17,9 +17,12 @@
   [:div.page
    [:.menu {:border-radius 0}]
    [:div.page-content
-    {:width (percent 75)
-     :padding (px 40)}
+    {:padding (px 40)}
+    [:div.wrapper
+     {:width (percent 75)}]
     module
     global
-    [:div.create {:margin [[0 0 (px 80) 0]]}]
-    [:div.results {:margin [[0 0 (px 80) 0]]}]]])
+    [:div.create {:width (percent 75)
+                  :margin [[(px 40) 0]]}]
+    [:div.results {:width (percent 75)
+                   :margin [[(px 40) 0]]}]]])

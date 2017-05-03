@@ -11,19 +11,9 @@
 ;; -------------------------
 ;; Views
 
-(def nav
-  [:> ($ :Menu) {:inverted true :pointing true :borderless true :class "menu"}
-   [:> ($ :Menu.Item)
-    [:> ($ :Image) {:src "http://www.guruadvisor.net/images/numero11/cloud.png" :height 32}]]
-   [:> ($ :Menu.Menu) {:position :right}
-    [:> ($ :Menu.Item) {:position :right} [:a {:href "/teacher"} "Teacher"]]
-    [:> ($ :Menu.Item) {:position :right} [:a {:href "/student"} "Student"]]]])
-
 (defn current-page []
   [:div.page
-   nav
-   [:div.page-content
-    [(session/get :current-page)]]])
+   [(session/get :current-page)]])
 
 (defn set-page!
   [page]
